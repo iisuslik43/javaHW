@@ -120,9 +120,9 @@ public class HashMap {
         List[] oldArray = listArray;
         listArray = new List[arraySize *= 2];
         for(List list : oldArray){
-            while(list.head != null){
-                this.put(list.head.key, list.head.value);
-                list.delete(list.head.key);
+            while(list.gethead() != null){
+                this.put(list.gethead().key, list.gethead().value);
+                list.delete(list.gethead().key);
             }
         }
 

@@ -16,7 +16,8 @@ public class List{
             next = prev = null;
         }
     }
-
+    public Node gethead(){return head;}
+    public Node getTail(){return tail;}
     /**
      * Вершины начала и конца списка
      */
