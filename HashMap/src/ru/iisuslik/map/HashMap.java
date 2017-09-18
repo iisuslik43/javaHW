@@ -36,7 +36,7 @@ public class HashMap {
     }
 
     private int getHash(String key){
-        return (key.hashCode() ^ 2 + 7) % arraySize;
+        return (key.hashCode() * key.hashCode() + 7) % arraySize;
     }
 
     public HashMap() {
