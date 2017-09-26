@@ -35,13 +35,13 @@ public class HashMap {
 
     }
 
-    private int getHash(String key){
-        return (key.hashCode() * key.hashCode() + 7) % arraySize;
+    private int getHash(String key) {
+        return ((key.hashCode() % (1 << 16)) * (key.hashCode() % (1 << 16)) + 7) % arraySize;
     }
 
     public HashMap() {
         listArray = new List[arraySize];
-        for(int i = 0; i < arraySize; i++) {
+        for (int i = 0; i < arraySize; i++) {
             listArray[i] = new List();
         }
     }
@@ -54,7 +54,7 @@ public class HashMap {
     /** true, если данный ключ содержится в хеш-таблице, и false иначе*/
      public boolean contains(String key) {
          String result = get(key);
-         if(result != null) {
+         if (result != null) {
             return true;
          }
          return false;
@@ -66,8 +66,8 @@ public class HashMap {
      **/
     public String get(String key) {
         int index = getHash(key);
-        String found = listArray[index].find_key(key);
-        if(found == null) {
+        String found = listArray[index].findKey(key);
+        if (found == null) {
             return null;
         }
         return found;
@@ -82,9 +82,9 @@ public class HashMap {
     public String put(String key, String value) {
         int index = getHash(key);
         String oldValue = listArray[index].add(key, value);
-        if(oldValue == null) {
+        if (oldValue == null) {
             keyCount++;
-            if(keyCount > arraySize) {
+            if (keyCount > arraySize) {
                 rehash();
             }
         }
@@ -99,7 +99,7 @@ public class HashMap {
     public String remove(String key) {
         int index = getHash(key);
         String delValue = listArray[index].delete(key);
-        if(delValue != null) {
+        if (delValue != null) {
             keyCount--;
         }
         return delValue;
@@ -107,7 +107,7 @@ public class HashMap {
 
     /** очистить хеш-таблицу*/
     public void clear() {
-        for(List list : listArray) {
+        for (List list : listArray) {
             list.clear();
         }
         keyCount = 0;
@@ -118,16 +118,14 @@ public class HashMap {
         List[] oldArray = listArray;
         listArray = new List[arraySize *= 2];
         keyCount = 0;
-        for(int i = 0; i < arraySize; i++) {
+        for (int i = 0; i < arraySize; i++) {
             listArray[i] = new List();
         }
-        for(List list : oldArray) {
-            while(list.getHead() != null) {
-                this.put(list.getHead().key, list.getHead().value);
-                list.delete(list.getHead().key);
+        for (List list : oldArray) {
+            while (list.getHeadKey() != null) {
+                this.put(list.getHeadKey(), list.getHeadValue());
+                list.delete(list.getHeadKey());
             }
         }
-
     }
-
 }

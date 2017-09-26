@@ -8,7 +8,7 @@ public class List {
     /**
      * Вершина списка
      */
-    public static class Node {
+    private static class Node {
         public String key, value;
         public Node next = null;
         public Node prev = null;
@@ -18,7 +18,18 @@ public class List {
         }
     }
 
-    public Node getHead() {return head;}
+    public String getHeadKey() {
+        if (head == null) {
+            return null;
+        }
+        return head.key;
+    }
+    public String getHeadValue(){
+        if (head == null) {
+            return null;
+        }
+        return head.value;
+    }
 
     /**Вершина начала списка*/
     private Node head = null;
@@ -32,22 +43,21 @@ public class List {
      * @param value - значение по ключу
      * @return предыдущее значаение по ключу, если такой ключ уже был в списке
      */
-
     public String add(String key, String value) {
-        Node new_node = new Node(key, value);
+        Node newNode = new Node(key, value);
         Node inside = find(key);
-        if(inside != null) {
+        if (inside != null) {
             String previousValue = inside.value;
             inside.value = value;
             return previousValue;
         }
-        if(head == null) {
-            head = tail = new_node;
+        if (head == null) {
+            head = tail = newNode;
             return null;
         }
-        tail.next = new_node;
-        new_node.prev = tail;
-        tail = new_node;
+        tail.next = newNode;
+        newNode.prev = tail;
+        tail = newNode;
         return null;
 
     }
@@ -55,7 +65,7 @@ public class List {
     /**Печатает весь список*/
     public void print() {
         Node go = head;
-        while(go != null) {
+        while (go != null) {
             System.out.printf("%s: %s\n", go.key, go.value);
             go = go.next;
         }
@@ -68,17 +78,18 @@ public class List {
      * @param key - ключ
      * @return null, если такого ключа нет, и вершину с этим ключом иначе
      */
-    public String find_key(String key) {
+    public String findKey(String key) {
         Node found = find(key);
-        if(found == null) {
+        if (found == null) {
             return null;
         }
         return found.value;
     }
+
     private Node find(String key) {
         Node go = head;
-        while(go != null) {
-            if(go.key.equals(key)) {
+        while (go != null) {
+            if (go.key.equals(key)) {
                 return go;
             }
             go = go.next;
@@ -93,19 +104,19 @@ public class List {
      */
     public String delete(String key) {
         Node inside = find(key);
-        if(inside == null) {
+        if (inside == null) {
             return null;
         }
-        if(inside == head) {
+        if (inside == head) {
             head = inside.next;
         }
-        if(inside == tail) {
+        if (inside == tail) {
             tail = inside.prev;
         }
-        if(inside.prev != null) {
+        if (inside.prev != null) {
             inside.prev.next = inside.next;
         }
-        if(inside.next != null) {
+        if (inside.next != null) {
             inside.next.prev = inside.prev;
         }
         return inside.value;
