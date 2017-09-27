@@ -5,9 +5,7 @@ package ru.iisuslik.list;
  */
 public class List {
 
-    /**
-     * Вершина списка
-     */
+    /***Вершина списка*/
     private static class Node {
         public String key, value;
         public Node next = null;
@@ -17,6 +15,7 @@ public class List {
             this.value = value;
         }
     }
+
 
     public String getHeadKey() {
         if (head == null) {

@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**Class that tests HashMap*/
 class HashMapTest {
+
+    /**Пытается создать HashMap*/
     @Test
     void createMap() {
         HashMap map = new HashMap();
@@ -12,13 +15,15 @@ class HashMapTest {
     }
 
 
+    /**Тестирование put*/
     @Test
     void put() {
         HashMap map = new HashMap();
         assertEquals(null, map.put("KEY", "VALUE"));
-        assertEquals(1,map.size());
+        assertEquals(1, map.size());
     }
 
+    /**Тестирование contains*/
     @Test
     void contains() {
         HashMap map = new HashMap();
@@ -27,16 +32,18 @@ class HashMapTest {
         assertEquals(false, map.contains("WRONG"));
     }
 
+
+    /**Тестирование get*/
     @Test
     void get() {
         HashMap map = new HashMap();
         map.put("KEY", "VALUE");
-        assertEquals(true, map.contains("KEY"));
-        assertEquals(false, map.contains("WRONG"));
+        assertEquals("VALUE", map.get("KEY"));
+        assertEquals(null, map.get("WRONG"));
 
     }
 
-
+    /**Тестирование remove*/
     @Test
     void remove() {
 
@@ -49,6 +56,7 @@ class HashMapTest {
         assertEquals(null, map.get("KEY1"));
     }
 
+    /**Тестирование clear*/
     @Test
     void clear() {
         HashMap map = new HashMap();
@@ -60,6 +68,7 @@ class HashMapTest {
         assertEquals(false, map.contains("KEY2"));
     }
 
+    /**Тестрование rehash: после нескольких добавлений происходит перехэширование*/
     @Test
     void putAndRehash(){
         HashMap map = new HashMap();
