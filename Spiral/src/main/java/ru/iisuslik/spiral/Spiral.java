@@ -11,8 +11,9 @@ public class Spiral {
      * Prints your odd square matrix
      *
      * @param matrix matrix you want to print
+     * @throws IllegalArgumentException
      */
-    public static String printLikeSpiral(int[][] matrix) {
+    public static String printLikeSpiral(int[][] matrix) throws IllegalArgumentException {
         StringBuilder buf = new StringBuilder();
         if (matrix.length % 2 != 1 && matrix[0].length % 2 != 1) {
             System.out.println("Even array");
@@ -31,8 +32,8 @@ public class Spiral {
                 continue;
             }
             int beginIndex = middleIndex - i;
-            int iNow, jNow;
-            iNow = jNow = beginIndex;
+            int iNow = beginIndex;
+            int jNow = beginIndex;
 
             do {
                 buf.append(matrix[iNow][jNow + 1]);
