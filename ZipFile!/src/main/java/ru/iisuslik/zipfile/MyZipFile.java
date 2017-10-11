@@ -36,7 +36,7 @@ public class MyZipFile {
      * @param file   archive file where you want to find files
      * @param regExp regular expression that you want to try to match with files
      */
-    public static void extractZipFile(File file, String regExp) {
+    private static void extractZipFile(File file, String regExp) {
         try (ZipFile zip = new ZipFile(file)) {
             Enumeration entries = zip.entries();
             while (entries.hasMoreElements()) {
@@ -59,7 +59,7 @@ public class MyZipFile {
      * @param file   directory where to search files
      * @param regExp regexp for extractZipFile
      */
-    public static void findZipFiles(File file, String regExp, String whitespaces) {
+    private static void findZipFiles(File file, String regExp, String whitespaces) {
         for (File nextFile : file.listFiles()) {
             if (nextFile.isFile() && file.canRead()) {
                 System.out.print(whitespaces);
