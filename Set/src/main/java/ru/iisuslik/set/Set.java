@@ -1,7 +1,7 @@
 package ru.iisuslik.set;
 
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Realization of set with binary search tree with methods add, contains and size
