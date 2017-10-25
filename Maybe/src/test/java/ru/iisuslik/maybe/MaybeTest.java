@@ -14,8 +14,6 @@ import static org.junit.Assert.*;
 public class MaybeTest {
     /**
      * Tries to create Maybe.just
-     *
-     * @throws Exception
      */
     @Test
     public void just() throws Exception {
@@ -24,8 +22,6 @@ public class MaybeTest {
 
     /**
      * Tries to create Maybe.nothing
-     *
-     * @throws Exception
      */
     @Test
     public void nothing() throws Exception {
@@ -34,8 +30,6 @@ public class MaybeTest {
 
     /**
      * Tests get
-     *
-     * @throws Exception
      */
     @Test
     public void get() throws Exception {
@@ -46,7 +40,7 @@ public class MaybeTest {
         boolean wasException = false;
         try {
             Integer iNull = mEmpty.get();
-        } catch (MaybeException mE) {
+        } catch (EmptyMaybeException mE) {
             wasException = true;
         }
         assertTrue(wasException);
@@ -54,8 +48,6 @@ public class MaybeTest {
 
     /**
      * Tests isPresent
-     *
-     * @throws Exception
      */
     @Test
     public void isPresent() throws Exception {
@@ -67,8 +59,6 @@ public class MaybeTest {
 
     /**
      * Tests map
-     *
-     * @throws Exception
      */
     @Test
     public void map() throws Exception {
@@ -83,8 +73,6 @@ public class MaybeTest {
 
     /**
      * Tests getIntFromFile, this test uses file ./src/test/resources/testInFile
-     *
-     * @throws Exception
      */
     @Test
     public void parseFile() throws Exception {
@@ -93,7 +81,7 @@ public class MaybeTest {
         String inFile = testDirectory + "testInFile";
         String outFile = testDirectory + "testOutFile";
         Maybe.getIntFromFile(inFile, outFile);
-        ArrayList<String> vector = new ArrayList<String>();
+        ArrayList<String> vector = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(
                         new FileInputStream(outFile), StandardCharsets.UTF_8))) {
@@ -102,10 +90,9 @@ public class MaybeTest {
                 vector.add(line);
             }
         } catch (IOException e) {
-            // pass
         }
         String[] arr = {"144", "529", "null", "1849", "144", "null", "null", "null"};
-        assertEquals(arr, vector.toArray());
+        assertArrayEquals(arr, vector.toArray());
         File out = new File(outFile);
         out.delete();
     }

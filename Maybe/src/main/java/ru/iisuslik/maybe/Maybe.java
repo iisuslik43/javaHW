@@ -26,7 +26,7 @@ public class Maybe<T> {
      * @return new Maybe<T> with t
      */
     public static <T> Maybe<T> just(@NotNull T value) {
-        return new Maybe<T>(value);
+        return new Maybe<>(value);
     }
 
     /**
@@ -35,18 +35,18 @@ public class Maybe<T> {
      * @return Maybe<T> with value = null
      */
     public static <T> Maybe<T> nothing() {
-        return new Maybe<T>(null);
+        return new Maybe<>(null);
     }
 
     /**
      * Get stored value
      *
      * @return stored value
-     * @throws MaybeException throws if value == null
+     * @throws EmptyMaybeException throws if value == null
      */
-    public T get() throws MaybeException {
+    public T get() throws EmptyMaybeException {
         if (t == null) {
-            throw new MaybeException();
+            throw new EmptyMaybeException();
         }
         return t;
     }
@@ -81,9 +81,10 @@ public class Maybe<T> {
      *
      * @param inFile  file from where you want to have lines
      * @param outFile file in that you want to write result
+     * @throws IOException if there are some problems with input file
      */
     public static void getIntFromFile(@NotNull String inFile, @NotNull String outFile) throws IOException {
-        ArrayList<Maybe<Integer>> vector = new ArrayList<Maybe<Integer>>();
+        ArrayList<Maybe<Integer>> vector = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(
                         new FileInputStream(inFile), StandardCharsets.UTF_8))) {
@@ -112,7 +113,8 @@ public class Maybe<T> {
                         writer.write("null");
                         writer.newLine();
                     }
-                } catch (MaybeException ignored) {}
+                } catch (EmptyMaybeException ignored) {
+                }
             }
         }
     }
