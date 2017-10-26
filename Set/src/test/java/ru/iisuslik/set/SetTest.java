@@ -1,6 +1,9 @@
 package ru.iisuslik.set;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -11,24 +14,31 @@ public class SetTest {
 
     /**
      * Tries to create sets with different T
-     * @throws Exception
      */
     @Test
     public void manySets() throws Exception {
-        Set<Integer> s1 = new Set<Integer>();
-        Set<String> s2 = new Set<String>();
-        Set<Double> s3 = new Set<Double>();
+        Set<Integer> s1 = new Set<>();
+        Set<String> s2 = new Set<>();
+        Set<Double> s3 = new Set<>();
+        class Kek implements Comparable<Kek> {
+            private int value = 43;
+
+            @Override
+            public int compareTo(@NotNull Kek o) {
+                return Integer.compare(value * value, o.value * o.value * o.value);
+            }
+        }
+        Set<Kek> s4 = new Set<>();
     }
 
     /**
      * Tries to add values to sets
-     * @throws Exception
      */
     @Test
     public void addToManySets() throws Exception {
-        Set<Integer> s1 = new Set<Integer>();
-        Set<String> s2 = new Set<String>();
-        Set<Double> s3 = new Set<Double>();
+        Set<Integer> s1 = new Set<>();
+        Set<String> s2 = new Set<>();
+        Set<Double> s3 = new Set<>();
         assertTrue(s1.add(43));
         assertTrue(s2.add("STRING"));
         assertTrue(s3.add(2.2));
@@ -36,13 +46,12 @@ public class SetTest {
 
     /**
      * Tests function "contains" with different T
-     * @throws Exception
      */
     @Test
     public void addAndCheckContains() throws Exception {
-        Set<Integer> s1 = new Set<Integer>();
-        Set<String> s2 = new Set<String>();
-        Set<Double> s3 = new Set<Double>();
+        Set<Integer> s1 = new Set<>();
+        Set<String> s2 = new Set<>();
+        Set<Double> s3 = new Set<>();
         assertTrue(s1.add(43));
         assertTrue(s2.add("STRING"));
         assertTrue(s3.add(2.2));
@@ -53,22 +62,20 @@ public class SetTest {
 
     /**
      * Tries to add 2 elements
-     * @throws Exception
      */
     @Test
     public void addAgain() throws Exception {
-        Set<Integer> s = new Set<Integer>();
+        Set<Integer> s = new Set<>();
         assertTrue(s.add(43));
         assertFalse(s.add(43));
     }
 
     /**
      * Tries to add many elements and check size
-     * @throws Exception
      */
     @Test
     public void addMultipleTimes() throws Exception {
-        Set<Integer> s = new Set<Integer>();
+        Set<Integer> s = new Set<>();
         assertEquals(0, s.size());
         for (int i = 1; i < 43; i++) {
             assertTrue(s.add(i));
@@ -82,4 +89,29 @@ public class SetTest {
         assertFalse(s.contains(0));
     }
 
+    /**
+     * Try to work with class that contains int and has strange comparator
+     */
+    @Test
+    public void testStrangeClass() throws Exception {
+
+        class Kek implements Comparable<Kek> {
+            private int value;
+
+            public Kek(int v) {
+                value = v;
+            }
+
+            @Override
+            public int compareTo(@NotNull Kek o) {
+                return Integer.compare(value * value, o.value * o.value);
+            }
+        }
+        Set<Kek> s = new Set<>();
+        s.add(new Kek(43));
+        s.add(new Kek(42));
+        assertTrue(s.contains(new Kek(43)));
+        assertTrue(s.contains(new Kek(42)));
+        assertEquals(2, s.size());
+    }
 }

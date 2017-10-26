@@ -5,19 +5,10 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Realization of set with binary search tree with methods add, contains and size
+ *
  * @param <T> Some type that can be compared with another one
  */
 public class Set<T extends Comparable<? super T>> {
-    private class Node<T extends Comparable<? super T>> {
-        public Node<T> l = null;
-        public Node<T> r = null;
-        public T value;
-
-        public Node(T value) {
-            this.value = value;
-        }
-    }
-
 
     private Node<T> head = null;
 
@@ -25,6 +16,7 @@ public class Set<T extends Comparable<? super T>> {
 
     /**
      * Function to check that value contains in set
+     *
      * @param value value you want to check if it contains in set
      * @return true if value contains and false else
      */
@@ -45,6 +37,7 @@ public class Set<T extends Comparable<? super T>> {
 
     /**
      * Function to add some value in set
+     *
      * @param value value you want to add
      * @return false if this value contained in set and true else
      */
@@ -62,13 +55,13 @@ public class Set<T extends Comparable<? super T>> {
             int compareResult = next.value.compareTo(value);
             if (compareResult < 0) {
                 if (next.r == null) {
-                    next.r = new Node<T>(value);
+                    next.r = new Node<>(value);
                     return true;
                 }
                 next = next.r;
             } else {
                 if (next.l == null) {
-                    next.l = new Node<T>(value);
+                    next.l = new Node<>(value);
                     return true;
                 }
                 next = next.l;
@@ -79,9 +72,20 @@ public class Set<T extends Comparable<? super T>> {
 
     /**
      * Function to get set's size
+     *
      * @return count of values that was added in set
      */
     public int size() {
         return size;
+    }
+
+    private static class Node<T> {
+        private Node<T> l = null;
+        private Node<T> r = null;
+        private T value;
+
+        private Node(T value) {
+            this.value = value;
+        }
     }
 }
