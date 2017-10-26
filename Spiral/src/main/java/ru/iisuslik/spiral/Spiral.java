@@ -11,17 +11,15 @@ public class Spiral {
      * Prints your odd square matrix
      *
      * @param matrix matrix you want to print
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if input matrix isn't square and has odd counts of rows or columns
      */
     public static String printLikeSpiral(int[][] matrix) throws IllegalArgumentException {
         StringBuilder buf = new StringBuilder();
         if (matrix.length % 2 != 1 && matrix[0].length % 2 != 1) {
-            System.out.println("Even array");
-            return null;
+            throw new IllegalArgumentException("Odd size");
         }
         if (matrix.length != matrix[0].length) {
-            System.out.println("n != m");
-            return null;
+            throw new IllegalArgumentException("Not square");
         }
         int n = matrix.length;
         int middleIndex = n / 2;
