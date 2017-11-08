@@ -4,8 +4,9 @@ package ru.iisuslik.zipfile;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.*;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class realises console utility that takes directory and regular expression
@@ -17,7 +18,7 @@ public class MyZipFile {
 
     private static File extractTo;
 
-    private static void write(InputStream in, OutputStream out) throws IOException {
+    private static void write(@NotNull InputStream in, @NotNull OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
         int len;
         while ((len = in.read(buffer)) >= 0)
@@ -35,8 +36,10 @@ public class MyZipFile {
     /**
      * @param file   archive file where you want to find files
      * @param regExp regular expression that you want to try to match with files
+     *
+     * @throws IOException
      */
-    private static void extractZipFile(File file, String regExp) {
+    private static void extractZipFile(@NotNull File file, @NotNull String regExp) throws IOException {
         try (ZipFile zip = new ZipFile(file)) {
             Enumeration entries = zip.entries();
             while (entries.hasMoreElements()) {
@@ -48,7 +51,8 @@ public class MyZipFile {
                 }
             }
             System.out.println();
-        } catch (IOException ignored) {
+
+        } catch (ZipException ignored) {
         }
     }
 
@@ -58,8 +62,10 @@ public class MyZipFile {
      *
      * @param file   directory where to search files
      * @param regExp regexp for extractZipFile
+     *
+     * @throws IOException
      */
-    private static void findZipFiles(File file, String regExp, String whitespaces) {
+    public static void findZipFiles(@NotNull File file, @NotNull String regExp, @NotNull String whitespaces) throws IOException {
         for (File nextFile : file.listFiles()) {
             if (nextFile.isFile() && file.canRead()) {
                 System.out.print(whitespaces);
@@ -77,13 +83,14 @@ public class MyZipFile {
     }
 
     /**
-     * Realization of utility
-     *
-     * @param args directory and regexp
+     * Function to check that arguments for function main are correct
+     * @param args arguments to check
+     * @return true if arguments are correct, false else
      */
-    public static void main(String[] args) {
+    public static boolean checkArgs(String[] args) {
         if (args.length != 2) {
             System.out.println("Please use like MyZipFile <directory> <regexp>");
+            return false;
         }
         String path = args[0];
         String regExp = args[1];
@@ -91,18 +98,38 @@ public class MyZipFile {
 
         if (!file.isDirectory()) {
             System.out.println("Input file is not a directory");
-            return;
+            return false;
         }
         if (!file.exists() || !file.canRead()) {
             System.out.println("Directory doesn't exists");
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * Realization of utility
+     *
+     * @param args directory and regexp
+     */
+    public static void main(String[] args) {
+        if (!checkArgs(args)) {
             return;
         }
+        String path = args[0];
+        String regExp = args[1];
+        File file = new File(path);
 
         extractTo = new File(file.getAbsolutePath() + File.separator + "ExtractedFiles");
         if (!extractTo.exists()) {
             extractTo.mkdir();
         }
-        findZipFiles(file, regExp, "");
+        try {
+            findZipFiles(file, regExp, "");
+        } catch (IOException ie) {
+            System.out.println("One of archive files can't be read");
+        }
     }
 }
 
