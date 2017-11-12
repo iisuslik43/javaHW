@@ -36,22 +36,18 @@ public class MyZipFile {
     /**
      * @param file   archive file where you want to find files
      * @param regExp regular expression that you want to try to match with files
-     *
-     * @throws IOException
+     * @throws IOException if there are some problems with files in directory
      */
     private static void extractZipFile(@NotNull File file, @NotNull String regExp) throws IOException {
         try (ZipFile zip = new ZipFile(file)) {
             Enumeration entries = zip.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) entries.nextElement();
-                System.out.print(getName(entry) + ' ');
                 if (!entry.isDirectory() && Pattern.matches(regExp, getName(entry))) {
                     write(zip.getInputStream(entry), new BufferedOutputStream(
                             new FileOutputStream(new File(extractTo, getName(entry)))));
                 }
             }
-            System.out.println();
-
         } catch (ZipException ignored) {
         }
     }
@@ -62,28 +58,25 @@ public class MyZipFile {
      *
      * @param file   directory where to search files
      * @param regExp regexp for extractZipFile
-     *
-     * @throws IOException
+     * @throws IOException if there are some problems with files in directory
      */
-    public static void findZipFiles(@NotNull File file, @NotNull String regExp, @NotNull String whitespaces) throws IOException {
+    public static void findZipFiles(@NotNull File file, @NotNull String regExp) throws IOException {
+        if (file.listFiles() == null) {
+            return;
+        }
         for (File nextFile : file.listFiles()) {
             if (nextFile.isFile() && file.canRead()) {
-                System.out.print(whitespaces);
-                System.out.print("file: ");
-                System.out.println(nextFile.getName() + " ");
                 extractZipFile(nextFile, regExp);
 
             } else if (nextFile.isDirectory() && file.canRead()) {
-                System.out.print(whitespaces);
-                System.out.print("dir: ");
-                System.out.println(nextFile.getName() + " ");
-                findZipFiles(nextFile, regExp, whitespaces + "--");
+                findZipFiles(nextFile, regExp);
             }
         }
     }
 
     /**
      * Function to check that arguments for function main are correct
+     *
      * @param args arguments to check
      * @return true if arguments are correct, false else
      */
@@ -93,20 +86,32 @@ public class MyZipFile {
             return false;
         }
         String path = args[0];
-        String regExp = args[1];
         File file = new File(path);
 
-        if (!file.isDirectory()) {
-            System.out.println("Input file is not a directory");
-            return false;
-        }
+
         if (!file.exists() || !file.canRead()) {
             System.out.println("Directory doesn't exists");
+            return false;
+        }
+        if (!file.isDirectory()) {
+            System.out.println("Input file is not a directory");
             return false;
         }
         return true;
     }
 
+
+    /**
+     * Just setter extractTo directory
+     *
+     * @param extractTo directory to set
+     */
+    public static void setExtractTo(File extractTo) {
+        MyZipFile.extractTo = extractTo;
+        if (!extractTo.exists()) {
+            extractTo.mkdir();
+        }
+    }
 
     /**
      * Realization of utility
@@ -121,12 +126,9 @@ public class MyZipFile {
         String regExp = args[1];
         File file = new File(path);
 
-        extractTo = new File(file.getAbsolutePath() + File.separator + "ExtractedFiles");
-        if (!extractTo.exists()) {
-            extractTo.mkdir();
-        }
+        setExtractTo(new File(file.getAbsolutePath() + File.separator + "ExtractedFiles"));
         try {
-            findZipFiles(file, regExp, "");
+            findZipFiles(file, regExp);
         } catch (IOException ie) {
             System.out.println("One of archive files can't be read");
         }
