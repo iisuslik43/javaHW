@@ -10,7 +10,7 @@ public class PredicateTest {
 
     private boolean dontChanged = true;
 
-    private Predicate<Integer> throwException = x -> {
+    private Predicate<Object> throwException = x -> {
         dontChanged = false;
         return true;
     };
@@ -25,10 +25,10 @@ public class PredicateTest {
      */
     @Test
     public void or() throws Exception {
-        assertTrue((boolean) ALWAYS_TRUE.or(ALWAYS_TRUE).apply(43));
-        assertTrue((boolean) ALWAYS_TRUE.or(ALWAYS_FALSE).apply(43));
-        assertTrue((boolean) ALWAYS_FALSE.or(ALWAYS_TRUE).apply(43));
-        assertFalse((boolean) ALWAYS_FALSE.or(ALWAYS_FALSE).apply(43));
+        assertTrue(ALWAYS_TRUE.or(ALWAYS_TRUE).apply(43));
+        assertTrue(ALWAYS_TRUE.or(ALWAYS_FALSE).apply(43));
+        assertTrue(ALWAYS_FALSE.or(ALWAYS_TRUE).apply(43));
+        assertFalse(ALWAYS_FALSE.or(ALWAYS_FALSE).apply(43));
     }
 
     /**
@@ -36,7 +36,7 @@ public class PredicateTest {
      */
     @Test
     public void orIsLazy() throws Exception {
-        assertTrue((boolean) ALWAYS_TRUE.or(throwException).apply(43));
+        assertTrue(ALWAYS_TRUE.or(throwException).apply(43));
         assertTrue(dontChanged);
     }
 
@@ -46,7 +46,7 @@ public class PredicateTest {
      */
     @Test
     public void andIsLazy() throws Exception {
-        assertFalse((boolean) ALWAYS_FALSE.and(throwException).apply(43));
+        assertFalse(ALWAYS_FALSE.and(throwException).apply(43));
         assertTrue(dontChanged);
     }
 
@@ -56,10 +56,10 @@ public class PredicateTest {
      */
     @Test
     public void and() throws Exception {
-        assertTrue((boolean) ALWAYS_TRUE.and(ALWAYS_TRUE).apply(43));
-        assertFalse((boolean) ALWAYS_TRUE.and(ALWAYS_FALSE).apply(43));
-        assertFalse((boolean) ALWAYS_FALSE.and(ALWAYS_TRUE).apply(43));
-        assertFalse((boolean) ALWAYS_FALSE.and(ALWAYS_FALSE).apply(43));
+        assertTrue(ALWAYS_TRUE.and(ALWAYS_TRUE).apply(43));
+        assertFalse(ALWAYS_TRUE.and(ALWAYS_FALSE).apply(43));
+        assertFalse(ALWAYS_FALSE.and(ALWAYS_TRUE).apply(43));
+        assertFalse(ALWAYS_FALSE.and(ALWAYS_FALSE).apply(43));
     }
 
     /**
@@ -67,8 +67,8 @@ public class PredicateTest {
      */
     @Test
     public void not() throws Exception {
-        assertTrue((boolean) ALWAYS_FALSE.not().apply(43));
-        assertFalse((boolean) ALWAYS_TRUE.not().apply(43));
+        assertTrue(ALWAYS_FALSE.not().apply(43));
+        assertFalse(ALWAYS_TRUE.not().apply(43));
     }
 
     /**

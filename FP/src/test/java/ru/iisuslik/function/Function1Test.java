@@ -47,7 +47,7 @@ public class Function1Test {
      */
     @Test
     public void composeDifferentTypes() throws Exception {
-        assertEquals(1.5, len.compose(divide2).apply("kek"),0.1);
+        assertEquals(1.5, len.compose(divide2).apply("kek"), 0.1);
     }
 
 }

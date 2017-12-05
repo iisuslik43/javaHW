@@ -1,5 +1,7 @@
 package ru.iisuslik.function;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Interface of Function from A to B
  *
@@ -18,11 +20,11 @@ public interface Function1<A, B> {
     /**
      * Realization of functions compose: g(f)
      *
-     * @param g 1 argument function from B to C
+     * @param g   1 argument function from B to C
      * @param <C> type of result of function g
      * @return function from A to C
      */
-    default <C> Function1<A, C> compose(Function1<B, C> g) {
+    default <C> Function1<A, C> compose(@NotNull Function1<B, C> g) {
         return arg -> g.apply(apply(arg));
     }
 }
