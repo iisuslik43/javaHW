@@ -1,6 +1,9 @@
 package ru.iisuslik.treeSet;
 
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.*;
 
 /**
@@ -8,19 +11,16 @@ import java.util.*;
  *
  * @param <E> type of values that contains in set
  */
-public class TreeSet<E> implements MyTreeSet<E> {
+public class TreeSet<E extends Comparable<? super E>> implements MyTreeSet<E> {
 
-    private Node<E> head = null;
-
-    private int size = 0;
-
-    private Comparator<? super E> comp;
+    private BinaryTree<E> tree;
 
     /**
      * TreeSet without constructor args will be use compareTo to compare elements
      */
     public TreeSet() {
-        comp = null;
+
+        tree = new BinaryTree<>();
     }
 
     /**
@@ -28,38 +28,17 @@ public class TreeSet<E> implements MyTreeSet<E> {
      *
      * @param comp - comparator to compare elements in TreeSet
      */
-    public TreeSet(Comparator<? super E> comp) {
-        this.comp = comp;
+    public TreeSet(@NotNull Comparator<? super E> comp) {
+        tree = new BinaryTree<>(comp);
     }
 
-    private int compare(E x, E y) {
-        if (comp == null) {
-            return ((Comparable<E>) x).compareTo(y);
-        } else {
-            return comp.compare(x, y);
-        }
-    }
 
     /**
      * {@link java.util.TreeSet#descendingIterator()}
      **/
     @Override
     public Iterator<E> descendingIterator() {
-        return new Iterator<E>() {
-            Node<E> now = maximum(head);
-
-            @Override
-            public boolean hasNext() {
-                return now != null;
-            }
-
-            @Override
-            public E next() {
-                E res = now.value;
-                now = prevNode(now);
-                return res;
-            }
-        };
+        return tree.descendingIterator();
     }
 
     /**
@@ -67,26 +46,9 @@ public class TreeSet<E> implements MyTreeSet<E> {
      **/
     @Override
     public MyTreeSet<E> descendingSet() {
-
-
-        Node<E> likeHead = head;
-        MyTreeSet<E> kek = new TreeSet<E>(this) {
-            @Override
-            public Iterator<E> iterator() {
-                return super.descendingIterator();
-            }
-
-            @Override
-            public Iterator<E> descendingIterator() {
-                return super.iterator();
-            }
-        };
-        return kek;
-    }
-
-    private TreeSet(TreeSet<E> old) {
-        head = old.head;
-        size = old.size;
+        TreeSet<E> newTreeSet = new TreeSet<>();
+        newTreeSet.tree = tree.descendingTree();
+        return newTreeSet;
     }
 
     /**
@@ -94,7 +56,7 @@ public class TreeSet<E> implements MyTreeSet<E> {
      **/
     @Override
     public E first() {
-        return minimum(head).value;
+        return tree.first();
     }
 
     /**
@@ -102,98 +64,47 @@ public class TreeSet<E> implements MyTreeSet<E> {
      **/
     @Override
     public E last() {
-        return maximum(head).value;
+        return tree.last();
     }
 
     /**
-     * {@link java.util.TreeSet#lower(E)}
+     * {@link java.util.TreeSet#lower}
      **/
     @Override
-    public E lower(E e) {
-        Node<E> now = head;
-        while (true) {
-            int compareRes = compare(e, now.value);
-            if (compareRes < 0) {
-                if (now.l != null) now = now.l;
-                else break;
-            } else if (compareRes > 0) {
-                if (now.r != null) now = now.r;
-                else break;
-            } else {
-                return prevNode(now).value;
-            }
-        }
-        if (compare(now.value, e) > 0) {
-            return prevNode(now).value;
-        }
-        return now.value;
+    public E lower(@NotNull E e) {
+        return tree.lower(e);
     }
 
     /**
-     * {@link java.util.TreeSet#floor(E)}
+     * {@link java.util.TreeSet#floor}
      **/
     @Override
-    public E floor(E e) {
-        if (contains(e)) {
-            return e;
-        }
-        return lower(e);
+    public E floor(@NotNull E e) {
+        return tree.floor(e);
     }
 
 
     /**
-     * {@link java.util.TreeSet#ceiling(E)}
+     * {@link java.util.TreeSet#ceiling}
      **/
-    public E ceiling(E e) {
-        if (contains(e)) {
-            return e;
-        }
-        return higher(e);
+    public E ceiling(@NotNull E e) {
+        return tree.ceiling(e);
     }
 
     /**
-     * {@link java.util.TreeSet#higher(E)}
+     * {@link java.util.TreeSet#higher}
      **/
-    public E higher(E e) {
-        Node<E> now = head;
-        while (true) {
-            int compareRes = compare(e, now.value);
-            if (compareRes < 0) {
-                if (now.l != null) now = now.l;
-                else break;
-            } else if (compareRes > 0) {
-                if (now.r != null) now = now.r;
-                else break;
-            } else {
-                return nextNode(now).value;
-            }
-        }
-        if (compare(now.value, e) < 0) {
-            return nextNode(now).value;
-        }
-        return now.value;
+    public E higher(@NotNull E e) {
+        return tree.higher(e);
     }
 
-    private Node<E> find(E e) {
-        Node<E> now = head;
-        while (true) {
-            int compareResult = compare(e, now.value);
-            if (compareResult < 0) {
-                now = now.l;
-            } else if (compareResult > 0) {
-                now = now.r;
-            } else {
-                return now;
-            }
-        }
-    }
 
     /**
      * {@link Set#size()}
      **/
     @Override
     public int size() {
-        return size;
+        return tree.size();
     }
 
     /**
@@ -201,79 +112,23 @@ public class TreeSet<E> implements MyTreeSet<E> {
      **/
     @Override
     public boolean isEmpty() {
-        return size == 0;
+        return tree.isEmpty();
     }
 
     /**
      * {@link Set#contains(Object o)}
      **/
     @Override
-    public boolean contains(Object o) {
-        Node<E> next = head;
-        while (next != null) {
-            int compareResult = compare((E) o, next.value);
-            if (compareResult == 0) {
-                return true;
-            } else if (compareResult < 0) {
-                next = next.l;
-            } else {
-                next = next.r;
-            }
-        }
-        return false;
+    public boolean contains(@NotNull Object o) {
+        return tree.contains(o);
     }
-
-    private Node<E> nextNode(Node<E> now) {
-        if (now == null) {
-            return null;
-        }
-        if (now.r != null) {
-            return minimum(now.r);
-        }
-        Node<E> parent = now.parent;
-        while (parent != null && now == parent.r) {
-            now = parent;
-            parent = now.parent;
-        }
-        return parent;
-    }
-
-    private Node<E> prevNode(Node<E> now) {
-        if (now == null) {
-            return null;
-        }
-        if (now.l != null) {
-            return maximum(now.l);
-        }
-        Node<E> parent = now.parent;
-        while (parent != null && now == parent.l) {
-            now = parent;
-            parent = now.parent;
-        }
-        return parent;
-    }
-
 
     /**
      * {@link Set#iterator()}
      **/
     @Override
     public Iterator<E> iterator() {
-        return new Iterator<E>() {
-            Node<E> now = minimum(head);
-
-            @Override
-            public boolean hasNext() {
-                return now != null;
-            }
-
-            @Override
-            public E next() {
-                E res = now.value;
-                now = nextNode(now);
-                return res;
-            }
-        };
+        return tree.iterator();
     }
 
     /**
@@ -281,161 +136,55 @@ public class TreeSet<E> implements MyTreeSet<E> {
      **/
     @Override
     public Object[] toArray() {
-        Object[] res = new Object[size];
-        int i = 0;
-        for (E it : this) {
-            res[i] = it;
-            i++;
-        }
-        return res;
+        return tree.toArray();
     }
 
     /**
      * {@link Set#toArray(T[] a)}
      **/
     @Override
-    public <T> T[] toArray(T[] a) {
-        if (a.length < size()) {
-            a = (T[]) new Object[size()];
-        }
-        int i = 0;
-        for (E el : this) {
-            a[i] = (T) el;
-            if (++i == a.length) {
-                break;
-            }
-        }
-        return a;
+    public <T> T[] toArray(@NotNull T[] a) {
+        return tree.toArray(a);
     }
 
     /**
-     * {@link Set#add(E)}
+     * {@link Set#add}
      **/
     @Override
-    public boolean add(E e) {
-        if (contains(e)) {
-            return false;
-        }
-        size++;
-        if (head == null) {
-            head = new Node<>(e, null);
-            return true;
-        }
-        Node<E> next = head;
-        while (true) {
-            int compareResult = compare(e, next.value);
-            if (compareResult < 0) {
-                if (next.l == null) {
-                    next.l = new Node<>(e, next);
-                    return true;
-                }
-                next = next.l;
-            } else {
-                if (next.r == null) {
-                    next.r = new Node<>(e, next);
-                    return true;
-                }
-                next = next.r;
-            }
-        }
+    public boolean add(@NotNull E e) {
+        return tree.add(e);
     }
 
     /**
      * {@link Set#remove(Object o)}
      **/
     @Override
-    public boolean remove(Object o) {
-        if (!contains(o)) {
-            return false;
-        }
-        size--;
-        Node<E> root = head;
-        head = delete(root, (E) o);
-        return true;
-    }
-
-    private Node<E> delete(Node<E> root, E key) {//TODO
-        if (root == null) return null;
-        int compareResult = compare(key, root.value);
-        if (compareResult < 0) {
-            root.l = delete(root.l, key);
-            if (root.l != null) root.l.parent = root;
-        } else if (compareResult > 0) {
-            root.r = delete(root.r, key);
-            if (root.r != null) root.r.parent = root;
-        } else if (root.l != null && root.r != null) {
-            root.value = minimum(root.r).value;
-            root.r = delete(root.r, root.value);
-            if (root.r != null) root.r.parent = root;
-        } else {
-            if (root.l == null) {
-                if (root.r != null) root.r.parent = root.parent;
-                root = root.r;
-            } else {
-                root.l.parent = root.parent;
-                root = root.l;
-            }
-        }
-        return root;
-    }
-
-    private Node<E> minimum(Node<E> root) {
-        while (root.l != null) {
-            root = root.l;
-        }
-        return root;
-    }
-
-    private Node<E> maximum(Node<E> root) {
-        while (root.r != null) {
-            root = root.r;
-        }
-        return root;
+    public boolean remove(@NotNull Object o) {
+        return tree.remove(o);
     }
 
     /**
      * {@link Set#containsAll(Collection)}
      **/
     @Override
-    public boolean containsAll(Collection<?> c) {
-        for (Object o : c) {
-            if (!contains(o)) {
-                return false;
-            }
-        }
-        return true;
+    public boolean containsAll(@NotNull Collection<?> c) {
+        return tree.containsAll(c);
     }
 
     /**
      * {@link Set#addAll(Collection)}
      **/
     @Override
-    public boolean addAll(Collection<? extends E> c) {
-        boolean changed = false;
-        for (E el : c) {
-            if (add(el)) {
-                changed = true;
-            }
-        }
-        return changed;
+    public boolean addAll(@NotNull Collection<? extends E> c) {
+        return tree.addAll(c);
     }
 
     /**
      * {@link Set#retainAll(Collection)}
      **/
     @Override
-    public boolean retainAll(Collection<?> c) {
-        ArrayList<E> res = new ArrayList<>();
-        boolean changed = false;
-        for (Object el : c) {
-            if (contains(el)) {
-                res.add((E) el);
-                changed = true;
-            }
-        }
-        this.clear();
-        this.addAll(res);
-        return changed;
+    public boolean retainAll(@NotNull Collection<?> c) {
+        return tree.retainAll(c);
 
     }
 
@@ -443,14 +192,8 @@ public class TreeSet<E> implements MyTreeSet<E> {
      * {@link Set#removeAll(Collection)}
      **/
     @Override
-    public boolean removeAll(Collection<?> c) {
-        boolean changed = false;
-        for (Object el : c) {
-            if (remove(el)) {
-                changed = true;
-            }
-        }
-        return changed;
+    public boolean removeAll(@NotNull Collection<?> c) {
+        return tree.removeAll(c);
     }
 
     /**
@@ -458,20 +201,8 @@ public class TreeSet<E> implements MyTreeSet<E> {
      **/
     @Override
     public void clear() {
-        head = null;
-        size = 0;
+        tree.clear();
     }
 
 
-    private static class Node<E> {
-        private Node<E> l = null;
-        private Node<E> r = null;
-        private E value;
-        private Node<E> parent;
-
-        private Node(E value, Node<E> parent) {
-            this.value = value;
-            this.parent = parent;
-        }
-    }
 }
