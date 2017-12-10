@@ -1,5 +1,8 @@
 package ru.iisuslik.trie;
 
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 
 /**
@@ -14,7 +17,7 @@ public class Trie implements Serializable {
      * @param element some string tp check
      * @return true if string contains in Trie, false else
      */
-    public boolean contains(String element) {
+    public boolean contains(@NotNull String element) {
         if (head == null) {
             return false;
         }
@@ -42,7 +45,7 @@ public class Trie implements Serializable {
         return buf.toString();
     }
 
-    private void toStr(Node now, char c, StringBuilder buf) {
+    private void toStr(@NotNull Node now, char c, @NotNull StringBuilder buf) {
         buf.append(" (|");
         buf.append(c);
         buf.append("|, ");
@@ -65,7 +68,7 @@ public class Trie implements Serializable {
      * @param element string you want to add
      * @return false if string was in Trie, true else
      */
-    public boolean add(String element) {
+    public boolean add(@NotNull String element) {
         if (contains(element)) {
             return false;
         }
@@ -77,6 +80,7 @@ public class Trie implements Serializable {
             now.wordsCount++;
             if (now.nextNodes[c] == null) {
                 now.nextNodes[c] = new Node();
+                now.nextNodes[c].parent = c;
             }
             now = now.nextNodes[c];
         }
@@ -92,7 +96,7 @@ public class Trie implements Serializable {
      * @param element string you want to delete
      * @return false if this string doesn't contains in Trie, true else
      */
-    public boolean remove(String element) {
+    public boolean remove(@NotNull String element) {
         if (!contains(element)) {
             return false;
         }
@@ -132,7 +136,7 @@ public class Trie implements Serializable {
      * @param prefix you want to check
      * @return count of strings, or 0, if this prefix doesn't contains in Trie
      */
-    public int howManyStartsWithPrefix(String prefix) {
+    public int howManyStartsWithPrefix(@NotNull String prefix) {
         if (head == null) {
             return 0;
         }
@@ -153,9 +157,11 @@ public class Trie implements Serializable {
      * @param out output stream, where you want to write Trie
      * @throws IOException it throws if there are some problem with output stream
      */
-    public void serialize(OutputStream out) throws IOException {
+    public void serialize(@NotNull OutputStream out) throws IOException {
         ObjectOutputStream myOut = new ObjectOutputStream(out);
-        myOut.writeObject(this);
+        if (head != null) {
+            head.serialize(myOut);
+        }
         myOut.flush();
         myOut.close();
     }
@@ -164,20 +170,51 @@ public class Trie implements Serializable {
      * deserialize function from interface Serializable
      *
      * @param in input stream. From this stream Trie will be read
-     * @throws IOException            if there are some problem with input stream (file doesn't exists e.t.c)
-     * @throws ClassNotFoundException if input trie is incorrect
+     * @throws IOException if there are some problem with input stream (file doesn't exists e.t.c)
      */
-    public void deserialize(InputStream in) throws IOException, ClassNotFoundException {
+    public void deserialize(@NotNull InputStream in) throws IOException {
         ObjectInputStream myIn = new ObjectInputStream(in);
-        Trie copy = (Trie) myIn.readObject();
+        head = Node.deserialize(myIn);
         myIn.close();
-        head = copy.head;
     }
 
     private static class Node implements Serializable {
+
         private Node[] nextNodes = new Node[(1 << 16)];
         private boolean theEnd = false;
         private int wordsCount = 0;
+        private char parent = '\0';
+
+        private void serialize(@NotNull ObjectOutputStream out) throws IOException {
+            out.writeChar(parent);
+            out.writeBoolean(theEnd);
+            out.writeInt(wordsCount);
+            int count = 0;
+            for (Node next : nextNodes) {
+                if (next != null) {
+                    count++;
+                }
+            }
+            out.writeInt(count);
+            for (Node next : nextNodes) {
+                if (next != null) {
+                    next.serialize(out);
+                }
+            }
+        }
+
+        private static Node deserialize(@NotNull ObjectInputStream in) throws IOException {
+            Node head = new Node();
+            head.parent = in.readChar();
+            head.theEnd = in.readBoolean();
+            head.wordsCount = in.readInt();
+            int count = in.readInt();
+            for (int i = 0; i < count; i++) {
+                Node next = deserialize(in);
+                head.nextNodes[next.parent] = next;
+            }
+            return head;
+        }
     }
 
     /**

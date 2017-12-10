@@ -4,6 +4,9 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -210,5 +213,63 @@ public class TrieTest {
         tCopy.add("KEK");
         tCopy.deserialize(in);
         assertEquals(t.toString(), tCopy.toString());
+    }
+
+    /**
+     * Try to serialize Trie and compare result with byte array
+     */
+    @Test
+    public void writing() throws Exception {
+        Trie t = new Trie();
+        t.add("a");
+        t.add("ab");
+        t.add("ba");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        t.serialize(out);
+        byte[] buffer = out.toByteArray();
+        assertArrayEquals(getSomeSerializedTrie(), buffer);
+    }
+
+    /**
+     * Try to deserialize from byte array and compare it with expected trie
+     */
+    @Test
+    public void reading() throws Exception {
+        Trie expected = new Trie();
+        expected.add("a");
+        expected.add("ab");
+        expected.add("ba");
+        byte[] data = getSomeSerializedTrie();
+        if (data == null) {
+            assertTrue(false);
+            return;
+        }
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        Trie actual = new Trie();
+        actual.deserialize(in);
+        assertEquals(expected.toString(), actual.toString());
+    }
+
+    private static byte[] getSomeSerializedTrie() {
+        try (ByteArrayOutputStream outByte = new ByteArrayOutputStream();
+             ObjectOutputStream out = new ObjectOutputStream(outByte)) {
+            writeFour('\0', false, 3, 2, out);
+            writeFour('a', true, 2, 1, out);
+            writeFour('b', true, 1, 0, out);
+            writeFour('b', false, 1, 1, out);
+            writeFour('a', true, 1, 0, out);
+            out.flush();
+            return outByte.toByteArray();
+        } catch (IOException e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
+        }
+        return null;
+    }
+
+    private static void writeFour(char parent, boolean theEnd, int wordsCount, int count, ObjectOutputStream out) throws IOException {
+        out.writeChar(parent);
+        out.writeBoolean(theEnd);
+        out.writeInt(wordsCount);
+        out.writeInt(count);
     }
 }
