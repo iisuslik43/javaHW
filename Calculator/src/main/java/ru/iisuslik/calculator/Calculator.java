@@ -1,7 +1,6 @@
 package ru.iisuslik.calculator;
 
 import org.jetbrains.annotations.NotNull;
-import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 

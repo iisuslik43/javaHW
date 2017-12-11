@@ -3,6 +3,8 @@ package ru.iisuslik.calculator;
 
 import org.junit.Test;
 
+import java.util.EmptyStackException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -51,6 +53,21 @@ public class StackTest {
     }
 
     /**
+     * Check that pop from empty stack throws exception
+     */
+    @Test
+    public void popFromEmpty() throws Exception {
+        Stack<Integer> st = new Stack<>();
+        boolean wasException = false;
+        try {
+            st.pop();
+        } catch (EmptyStackException e) {
+            wasException = true;
+        }
+        assertTrue(wasException);
+    }
+
+    /**
      * Try to add and delete many elements
      */
     @Test
@@ -88,13 +105,13 @@ public class StackTest {
         st.push(42);
         st.push(2);
         st.push(4);
-        assertEquals(4, (int)st.top());
+        assertEquals(4, (int) st.top());
         st.pop();
-        assertEquals(2, (int)st.top());
+        assertEquals(2, (int) st.top());
         st.pop();
-        assertEquals(42, (int)st.top());
+        assertEquals(42, (int) st.top());
         st.pop();
-        assertEquals(43, (int)st.top());
+        assertEquals(43, (int) st.top());
         st.pop();
     }
 

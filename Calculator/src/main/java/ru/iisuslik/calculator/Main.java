@@ -1,6 +1,7 @@
 package ru.iisuslik.calculator;
 
 import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 /**
@@ -70,13 +71,13 @@ public class Main {
                 } else if (st.top().equals("/") || st.top().equals("*")) {
                     res.add(st.pop());
                 }
-            } else if(now.equals("(")){
+            } else if (now.equals("(")) {
                 st.push(now);
                 i++;
             } else if (now.equals(")")) {
                 if (st.top().equals("-") || st.top().equals("+") || st.top().equals("*") || st.top().equals("/")) {
                     res.add(st.pop());
-                } else if(st.top().equals("(")) {
+                } else if (st.top().equals("(")) {
                     st.pop();
                     i++;
                 }

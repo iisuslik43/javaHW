@@ -1,12 +1,15 @@
 package ru.iisuslik.calculator;
 
+import java.util.EmptyStackException;
+
 /**
  * Realization of stack that uses list
  *
  * @param <T> type of containing values
  */
-public class Stack<T>{
-    private Node<T> head, tail;
+public class Stack<T> {
+    private Node<T> head;
+    private Node<T> tail;
 
     /**
      * After this stack contains nothing
@@ -42,14 +45,18 @@ public class Stack<T>{
         tail = newNode;
     }
 
-    /** Remove first element from stack
+
+    /**
+     * Remove first element from stack
+     *
      * @return removed element or null if stack was empty
+     * @throws EmptyStackException if stack is empty
      */
-    public T pop() {
-        if(size == 0)
-            return null;
+    public T pop() throws EmptyStackException {
+        if (size == 0)
+            throw new EmptyStackException();
         T result = tail.value;
-        if(tail == head)
+        if (tail == head)
             tail = head = null;
         else
             tail = tail.prev;
@@ -59,10 +66,11 @@ public class Stack<T>{
 
     /**
      * get first element in stack
+     *
      * @return first element
      */
     public T top() {
-        if(size == 0)
+        if (size == 0)
             return null;
         return tail.value;
     }
