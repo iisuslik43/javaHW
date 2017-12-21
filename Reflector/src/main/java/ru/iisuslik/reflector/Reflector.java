@@ -1,16 +1,24 @@
 package ru.iisuslik.reflector;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.*;
 import java.util.HashSet;
 import java.util.Objects;
 
+/**
+ * Class that realizes 2 functions:
+ * 1) Compare 2 Class<?> by fields and methods
+ * 2) Print Class<?>
+ * Both functions have 2 realization: System.out.println(result) and return (String) result
+ */
 public class Reflector {
     /**
      * Prints class definition
      *
      * @param someClass class to print
      */
-    public static void printStructure(Class<?> someClass) {
+    public static void printStructure(@NotNull Class<?> someClass) {
         System.out.print(classToString(someClass, 0, false));
     }
 
@@ -20,7 +28,7 @@ public class Reflector {
      * @param someClass class to print
      * @return string that contains class
      */
-    public static String classToString(Class<?> someClass) {
+    public static String classToString(@NotNull Class<?> someClass) {
         return classToString(someClass, 0, false);
     }
 
@@ -30,7 +38,7 @@ public class Reflector {
      * @param class1 first class to compare
      * @param class2 second class to compare
      */
-    public static void diffClasses(Class<?> class1, Class<?> class2) {
+    public static void diffClasses(@NotNull Class<?> class1, @NotNull Class<?> class2) {
         System.out.println(diffToString(class1, class2));
     }
 
@@ -41,14 +49,14 @@ public class Reflector {
      * @param class2 second class to compare
      * @return string with comparing result
      */
-    public static String diffToString(Class<?> class1, Class<?> class2) {
+    public static String diffToString(@NotNull Class<?> class1, @NotNull Class<?> class2) {
         return diffMethods(class1, class2) +
                 diffFields(class1, class2);
     }
 
     private static Class<?> someClass;
 
-    private static String addField(Field f, int depth) {
+    private static String addField(@NotNull Field f) {
         StringBuilder buf = new StringBuilder();
         buf.append(Modifier.toString(f.getModifiers()));
         if (f.getModifiers() != 0)
@@ -76,7 +84,7 @@ public class Reflector {
         for (Field f : fields) {
             if (f.getName().equals("this$0"))
                 continue;
-            buf.append(addField(f, depth));
+            buf.append(addField(f));
             nextLine(depth, buf);
         }
         return buf.toString();
@@ -90,8 +98,7 @@ public class Reflector {
         if (!isInner) {
             classAll = classAll.substring(0, pos) + "SomeClass" + classAll.substring(pos + someClass.getName().length());
         } else {
-            //classAll = classAll.substring(0, pos) + someClass.getSimpleName() + classAll.substring(pos + someClass.getSimpleName().length());
-            while (!Objects.equals(classAll, cutDollar(classAll))){
+            while (!Objects.equals(classAll, cutDollar(classAll))) {
                 classAll = cutDollar(classAll);
             }
         }
@@ -99,6 +106,15 @@ public class Reflector {
         buf.append(classAll);
         if (someClass.getSuperclass() != null && !someClass.getSuperclass().getSimpleName().equals("Object")) {
             buf.append(" extends ").append(someClass.getSuperclass().getSimpleName());
+        }
+        if (someClass.getInterfaces().length != 0) {
+            buf.append(" implements");
+            int n = someClass.getInterfaces().length;
+            for (int i = 0; i < n; i++) {
+                buf.append(' ').append(someClass.getInterfaces()[i].getSimpleName());
+                if (i != n - 1)
+                    buf.append(',');
+            }
         }
         buf.append(" {");
         nextLine(depth, buf);
@@ -117,7 +133,7 @@ public class Reflector {
         return buf.toString();
     }
 
-    private static String addMethod(Method m, int depth) {
+    private static String addMethod(@NotNull Method m, int depth) {
         StringBuilder buf = new StringBuilder();
         boolean hasArgs = m.getParameterCount() != 0;
         buf.append(cutMethodString(m.toGenericString(), hasArgs));
@@ -162,7 +178,7 @@ public class Reflector {
         return buf.toString();
     }
 
-    private static String addConstructor(Constructor cons, int depth, boolean isInner) {
+    private static String addConstructor(@NotNull Constructor cons, int depth, boolean isInner) {
         StringBuilder buf = new StringBuilder();
         boolean hasArgs = cons.getParameterCount() != 0;
 
@@ -175,20 +191,20 @@ public class Reflector {
         return buf.toString();
     }
 
-    private static String changeName(String consName, String cons) {
+    private static String changeName(@NotNull String consName, String cons) {
         int i = cons.indexOf(consName);
         return cons.substring(0, i) + "SomeClass" + cons.substring(i + consName.length(), cons.length());
 
     }
 
-    private static void nextLine(int depth, StringBuilder b) {
+    private static void nextLine(int depth, @NotNull StringBuilder b) {
         b.append('\n');
         for (int i = 0; i < depth; i++) {
             b.append("    ");
         }
     }
 
-    private static String cutMethodString(String name, boolean hasArgs) {
+    private static String cutMethodString(@NotNull String name, boolean hasArgs) {
         int ind = name.indexOf(someClass.getName());
         if (ind == -1)
             return name;
@@ -201,7 +217,7 @@ public class Reflector {
         return res;
     }
 
-    private static String cutConstructor(String name, boolean hasArgs) {
+    private static String cutConstructor(@NotNull String name, boolean hasArgs) {
         int i = name.indexOf(someClass.getName());
         int j = name.indexOf(someClass.getSimpleName());
         if (i == -1)
@@ -213,7 +229,7 @@ public class Reflector {
         return res;
     }
 
-    private static String cutDollar(String s) {
+    private static String cutDollar(@NotNull String s) {
         int i = s.indexOf('$');
         if (i == -1)
             return s;
@@ -229,7 +245,7 @@ public class Reflector {
         return s.substring(0, j + 1) + s.substring(i + 1, s.length());
     }
 
-    private static String addArgsNames(String name) {
+    private static String addArgsNames(@NotNull String name) {
         String argName = "a";
         int count = 1;
         StringBuilder res = new StringBuilder();
@@ -245,7 +261,7 @@ public class Reflector {
         return res.toString();
     }
 
-    private static String classToString(Class<?> someClazz, int depth, boolean isInner) {
+    private static String classToString(@NotNull Class<?> someClazz, int depth, boolean isInner) {
         StringBuilder buf = new StringBuilder();
         someClass = someClazz;
         buf.append(addClass(depth + 1, isInner));
@@ -267,7 +283,7 @@ public class Reflector {
         return buf.toString();
     }
 
-    private static String diffFields(Class<?> class1, Class<?> class2) {
+    private static String diffFields(@NotNull Class<?> class1, @NotNull Class<?> class2) {
         StringBuilder buf = new StringBuilder();
 
         HashSet<Field> set1 = new HashSet<>();
@@ -284,21 +300,21 @@ public class Reflector {
         }
         for (Field f : class1.getDeclaredFields()) {
             if (!set1.contains(f))
-                buf.append(addField(f, 0)).append('\n');
+                buf.append(addField(f)).append('\n');
         }
         for (Field f : class2.getDeclaredFields()) {
             if (!set2.contains(f))
-                buf.append(addField(f, 0)).append('\n');
+                buf.append(addField(f)).append('\n');
         }
 
         return buf.toString();
     }
 
-    private static boolean compareFields(Field f1, Field f2) {
+    private static boolean compareFields(@NotNull Field f1, @NotNull Field f2) {
         return compareTypes(f1.getGenericType(), f2.getGenericType()) && f1.getName().equals(f2.getName());
     }
 
-    private static String diffMethods(Class<?> class1, Class<?> class2) {
+    private static String diffMethods(@NotNull Class<?> class1, @NotNull Class<?> class2) {
         StringBuilder buf = new StringBuilder();
         HashSet<Method> set1 = new HashSet<>();
         HashSet<Method> set2 = new HashSet<>();
@@ -323,7 +339,7 @@ public class Reflector {
         return buf.toString();
     }
 
-    private static boolean compareMethods(Method m1, Method m2) {
+    private static boolean compareMethods(@NotNull Method m1, @NotNull Method m2) {
         if (!compareTypes(m1.getGenericReturnType(), m2.getGenericReturnType())) {
             return false;
         }
@@ -338,13 +354,13 @@ public class Reflector {
         return m1.getName().equals(m2.getName());
     }
 
-    private static boolean compareTypes(Type t1, Type t2) {
+    private static boolean compareTypes(@NotNull Type t1, @NotNull Type t2) {
         String s1 = correctType(t1.getTypeName());
         String s2 = correctType(t2.getTypeName());
         return s1.equals(s2);
     }
 
-    private static String correctType(String t) {
+    private static String correctType(@NotNull String t) {
         int i = t.indexOf("extends Object");
         if (i != -1)
             return t.substring(0, i) + t.substring(i + 13, t.length());

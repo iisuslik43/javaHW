@@ -6,6 +6,9 @@ import java.io.*;
 
 import static org.junit.Assert.*;
 
+/**
+ * Tests to class Reflector
+ */
 public class ReflectorTest {
 
     /**
@@ -24,20 +27,39 @@ public class ReflectorTest {
         printAndCompare(MyClass.class);
     }
 
+
+    /**
+     * Try to compare 2 classes with different field name
+     */
     @Test
     public void compareDifferentNames() throws Exception {
-        assertEquals("private int a;\nprivate int b;\n", Reflector.diffToString(SimpleClass.class, SimpleWithB.class));
+        assertEquals("private int a;\nprivate int b;\n",
+                Reflector.diffToString(SimpleClass.class, SimpleWithB.class));
     }
 
+    /**
+     * Try to compare 2 classes with different field type
+     */
     @Test
     public void compareDifferentTypes() throws Exception {
         assertEquals("private int a;\nprivate char a;\n",
                 Reflector.diffToString(SimpleClass.class, SimpleWithChar.class));
     }
 
+    /**
+     * Try to compare class with itself
+     */
     @Test
     public void compareSameClass() throws Exception {
         assertEquals("", Reflector.diffToString(MyClass.class, MyClass.class));
+    }
+
+    /**
+     * Try to compare class with method <E> and class with method <E extends Object>
+     */
+    @Test
+    public void compareExtendsObject() throws Exception {
+        assertEquals("", Reflector.diffToString(GenericClass.class, GenericClassStrange.class));
     }
 
 
@@ -58,11 +80,28 @@ public class ReflectorTest {
     }
 
     /**
-     * Try to print, compile and diff class extends SimpleClass
+     * Try to print class that extends SimpleClass
      */
     @Test
     public void printSimpleClassExtendsSimple() throws Exception {
         print(ClassExtendsSimple.class);
+        String res = Reflector.classToString(ClassExtendsSimple.class);
+        assertTrue(res.contains("public class SomeClass"));
+        assertTrue(res.contains("extends SimpleClass"));
+        assertTrue(res.contains("int c"));
+        assertTrue(res.contains("public void go()"));
+    }
+
+    /**
+     * Try to print class that implements Interface
+     */
+    @Test
+    public void printSimpleClassImplementsInterface() throws Exception {
+        print(ClassImplementsInterface.class);
+        String res = Reflector.classToString(ClassImplementsInterface.class);
+        assertTrue(res.contains("public class SomeClass"));
+        assertTrue(res.contains("implements Interface"));
+        assertTrue(res.contains("void nothing()"));
     }
 
     /**
@@ -92,7 +131,8 @@ public class ReflectorTest {
         assertEquals("", Reflector.diffToString(clazz, originalClass));
     }
 
-    private Class<?> writeClassAndCompile(String allClass, Class<?> original) throws IOException, ClassNotFoundException, InterruptedException {
+    private Class<?> writeClassAndCompile(String allClass, Class<?> original) throws IOException,
+            ClassNotFoundException, InterruptedException {
         char sep = File.separatorChar;
         SimpleClass aaa = new SimpleClass();
         Class.forName("ru.iisuslik.reflector.SimpleClass");
@@ -101,7 +141,7 @@ public class ReflectorTest {
         PrintWriter out = new PrintWriter(filename);
         out.print(allClass);
         out.close();
-        if(original.getSuperclass() != null) {
+        if (original.getSuperclass() != null) {
             ReflectorTest.class.getClassLoader().loadClass(original.getSuperclass().getName());
         }
         Runtime.getRuntime().exec("javac " + filename).waitFor();
@@ -121,34 +161,20 @@ public class ReflectorTest {
 
     private byte[] fetchClassFromFS(String path) throws IOException {
         InputStream is = new FileInputStream(new File(path));
-
-        // Get the size of the file
         long length = new File(path).length();
-
-        if (length > Integer.MAX_VALUE) {
-            // File is too large
-        }
-
-        // Create the byte array to hold the data
         byte[] bytes = new byte[(int) length];
 
-        // Read in the bytes
         int offset = 0;
-        int numRead = 0;
+        int numRead;
         while (offset < bytes.length
                 && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
             offset += numRead;
         }
-
-        // Ensure all the bytes have been read in
         if (offset < bytes.length) {
             throw new IOException("Could not completely read file " + path);
         }
-
-        // Close the input stream and return bytes
         is.close();
         return bytes;
-
     }
 }
 
