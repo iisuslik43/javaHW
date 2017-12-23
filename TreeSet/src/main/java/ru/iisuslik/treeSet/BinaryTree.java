@@ -16,7 +16,7 @@ class BinaryTree<E> implements Collection<E> {
      * TreeSet without constructor args will be use compareTo to compare elements
      */
     public BinaryTree() {
-        comp = null;
+        comp = (o1, o2) -> ((Comparable<E>) o1).compareTo(o2);
     }
 
     /**
@@ -29,11 +29,7 @@ class BinaryTree<E> implements Collection<E> {
     }
 
     private int compare(E x, E y) {
-        if (comp == null) {
-            return ((Comparable<E>) x).compareTo(y);
-        } else {
-            return comp.compare(x, y);
-        }
+        return comp.compare(x, y);
     }
 
     /**
@@ -77,6 +73,7 @@ class BinaryTree<E> implements Collection<E> {
     private BinaryTree(BinaryTree<E> old) {
         head = old.head;
         size = old.size;
+        comp = old.comp;
     }
 
     /**
@@ -101,13 +98,13 @@ class BinaryTree<E> implements Collection<E> {
         while (true) {
             int compareRes = compare(e, now.value);
             if (compareRes < 0) {
-                if (now.l != null)
+                if (now.l != null) {
                     now = now.l;
-                else break;
+                } else break;
             } else if (compareRes > 0) {
-                if (now.r != null)
+                if (now.r != null) {
                     now = now.r;
-                else break;
+                } else break;
             } else {
                 return prevNode(now).value;
             }
@@ -147,11 +144,13 @@ class BinaryTree<E> implements Collection<E> {
         while (true) {
             int compareRes = compare(e, now.value);
             if (compareRes < 0) {
-                if (now.l != null) now = now.l;
-                else break;
+                if (now.l != null) {
+                    now = now.l;
+                } else break;
             } else if (compareRes > 0) {
-                if (now.r != null) now = now.r;
-                else break;
+                if (now.r != null) {
+                    now = now.r;
+                } else break;
             } else {
                 return nextNode(now).value;
             }
@@ -326,21 +325,25 @@ class BinaryTree<E> implements Collection<E> {
         int compareResult = compare(key, root.value);
         if (compareResult < 0) {
             root.l = delete(root.l, key);
-            if (root.l != null)
+            if (root.l != null) {
                 root.l.parent = root;
+            }
         } else if (compareResult > 0) {
             root.r = delete(root.r, key);
-            if (root.r != null)
+            if (root.r != null) {
                 root.r.parent = root;
+            }
         } else if (root.l != null && root.r != null) {
             root.value = minimum(root.r).value;
             root.r = delete(root.r, root.value);
-            if (root.r != null)
+            if (root.r != null) {
                 root.r.parent = root;
+            }
         } else {
             if (root.l == null) {
-                if (root.r != null)
+                if (root.r != null) {
                     root.r.parent = root.parent;
+                }
                 root = root.r;
             } else {
                 root.l.parent = root.parent;
