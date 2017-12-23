@@ -13,18 +13,20 @@ import java.util.stream.Stream;
 
 public final class SecondPartTasks {
 
-    private SecondPartTasks() {}
+    private SecondPartTasks() {
+    }
 
     // Найти строки из переданных файлов, в которых встречается указанная подстрока.
     public static List<String> findQuotes(List<String> paths, CharSequence sequence) {
 
-        return paths.stream().flatMap(path-> {
+        return paths.stream().flatMap(path -> {
             Stream<String> str = null;
-            try{
-            str = Files.lines(Paths.get(path));
-            } catch (Exception ignored) {}
+            try {
+                str = Files.lines(Paths.get(path));
+            } catch (Exception ignored) {
+            }
             return str;
-        }). filter(s->s.contains(sequence)).collect(Collectors.toList());
+        }).filter(s -> s.contains(sequence)).collect(Collectors.toList());
     }
 
     // В квадрат с длиной стороны 1 вписана мишень.
@@ -33,25 +35,25 @@ public final class SecondPartTasks {
     public static double piDividedBy4() {
         Random rnd = new Random();
         int count = 100000;
-        DoubleStream res = rnd.doubles(count,-0.5, 0.5);
-        return (double) res.filter(d->{
-            double d2 = rnd.doubles(1,-0.5,0.5).findAny().getAsDouble();
+        DoubleStream res = rnd.doubles(count, -0.5, 0.5);
+        return (double) res.filter(d -> {
+            double d2 = rnd.doubles(1, -0.5, 0.5).findAny().getAsDouble();
             return (d * d + d2 * d2 <= 0.25);
-        }).count() / count ;
+        }).count() / count;
     }
 
     // Дано отображение из имени автора в список с содержанием его произведений.
     // Надо вычислить, чья общая длина произведений наибольшая.
     public static String findPrinter(Map<String, List<String>> compositions) {
         return compositions.entrySet().stream().max(
-                Comparator.comparing(e -> e.getValue().stream().reduce("", (s1,l)-> s1.length() + l))
+                Comparator.comparing(e -> e.getValue().stream().reduce("", (s1, l) -> s1.length() + l))
         ).get().getKey();
     }
 
     // Вы крупный поставщик продуктов. Каждая торговая сеть делает вам заказ в виде Map<Товар, Количество>.
     // Необходимо вычислить, какой товар и в каком количестве надо поставить.
     public static Map<String, Integer> calculateGlobalOrder(List<Map<String, Integer>> orders) {
-        return orders.stream().flatMap(m->m.entrySet().stream()).collect(Collectors.groupingBy(
+        return orders.stream().flatMap(m -> m.entrySet().stream()).collect(Collectors.groupingBy(
                 Map.Entry::getKey,
                 Collectors.summingInt(Map.Entry::getValue)
         ));

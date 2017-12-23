@@ -28,13 +28,9 @@ public final class FirstPartTasks {
 
     // Список альбомов, в которых есть хотя бы один трек с рейтингом более 95, отсортированный по названию
     public static List<Album> sortedFavorites(Stream<Album> s) {
-        return s.filter(album -> {
-            for (Track track : album.getTracks()) {
-                if (track.getRating() > 95)
-                    return true;
-            }
-            return false;
-        }).sorted(Comparator.comparing(Album::getName)).collect(Collectors.toList());
+        return s.filter(album ->
+                album.getTracks().stream().anyMatch(track -> track.getRating() > 95)
+        ).sorted(Comparator.comparing(Album::getName)).collect(Collectors.toList());
     }
 
     // Сгруппировать альбомы по артистам
@@ -89,11 +85,11 @@ public final class FirstPartTasks {
     // Вернуть строку, состояющую из конкатенаций переданного массива, и окруженную строками "<", ">"
     // см. тесты
     public static String joinTo(String... strings) {
-        return Stream.of(strings).collect(Collectors.joining(", ", "<",">"));
+        return Stream.of(strings).collect(Collectors.joining(", ", "<", ">"));
     }
 
     // Вернуть поток из объектов класса 'clazz'
     public static <R> Stream<R> filterIsInstance(Stream<?> s, Class<R> clazz) {
-        return s.filter(clazz::isInstance).map(o->(R)o);
+        return s.filter(clazz::isInstance).map(o -> (R) o);
     }
 }
