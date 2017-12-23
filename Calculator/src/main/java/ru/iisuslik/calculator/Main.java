@@ -10,7 +10,6 @@ import java.util.ArrayList;
 public class Main {
 
     private static boolean isInt(@NotNull String s) {
-
         for (char c : s.toCharArray()) {
             if (c < '0' || c > '9') {
                 return false;
