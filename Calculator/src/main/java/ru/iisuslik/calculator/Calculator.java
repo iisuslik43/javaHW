@@ -9,8 +9,7 @@ import java.util.ArrayList;
  */
 public class Calculator {
 
-    private static boolean isInt(String s) {
-
+    private static boolean isInt(@NotNull String s) {
         for (char c : s.toCharArray()) {
             if (c < '0' || c > '9') {
                 return false;
@@ -27,7 +26,7 @@ public class Calculator {
      *
      * @param st stack that calculator will use
      */
-    public Calculator(Stack<Integer> st) {
+    public Calculator(@NotNull Stack<Integer> st) {
         stack = st;
     }
 
@@ -40,8 +39,9 @@ public class Calculator {
     public int calculate(@NotNull ArrayList<String> poland) {
         stack.clear();
         for (String now : poland) {
-            if (isInt(now))
+            if (isInt(now)) {
                 stack.push(Integer.parseInt(now));
+            }
             else {
                 int b = stack.pop();
                 int a = stack.pop();

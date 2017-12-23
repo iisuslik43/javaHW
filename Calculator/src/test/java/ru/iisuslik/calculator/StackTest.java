@@ -55,16 +55,19 @@ public class StackTest {
     /**
      * Check that pop from empty stack throws exception
      */
-    @Test
+    @Test(expected = EmptyStackException.class)
     public void popFromEmpty() throws Exception {
         Stack<Integer> st = new Stack<>();
-        boolean wasException = false;
-        try {
-            st.pop();
-        } catch (EmptyStackException e) {
-            wasException = true;
-        }
-        assertTrue(wasException);
+        st.pop();
+    }
+
+    /**
+     * Check that top from empty stack throws exception
+     */
+    @Test(expected = EmptyStackException.class)
+    public void topFromEmpty() throws Exception {
+        Stack<Integer> st = new Stack<>();
+        st.top();
     }
 
     /**

@@ -1,5 +1,7 @@
 package ru.iisuslik.calculator;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.EmptyStackException;
 
 /**
@@ -34,7 +36,7 @@ public class Stack<T> {
      *
      * @param value value to add
      */
-    public void push(T value) {
+    public void push(@Nullable T value) {
         size++;
         Node<T> newNode = new Node<>(value);
         if (head == null) {
@@ -53,13 +55,15 @@ public class Stack<T> {
      * @throws EmptyStackException if stack is empty
      */
     public T pop() throws EmptyStackException {
-        if (size == 0)
+        if (size == 0) {
             throw new EmptyStackException();
+        }
         T result = tail.value;
-        if (tail == head)
+        if (tail == head) {
             tail = head = null;
-        else
+        } else {
             tail = tail.prev;
+        }
         size--;
         return result;
     }
@@ -68,10 +72,12 @@ public class Stack<T> {
      * get first element in stack
      *
      * @return first element
+     * @throws EmptyStackException if stack is empty
      */
-    public T top() {
-        if (size == 0)
-            return null;
+    public T top() throws EmptyStackException {
+        if (size == 0) {
+            throw new EmptyStackException();
+        }
         return tail.value;
     }
 
@@ -79,7 +85,7 @@ public class Stack<T> {
         private Node<T> prev = null;
         private T value;
 
-        private Node(T value) {
+        private Node(@Nullable T value) {
             this.value = value;
         }
     }
